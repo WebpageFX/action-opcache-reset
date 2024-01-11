@@ -1,0 +1,39 @@
+name: 'Opcache Reset'
+description: 'Reset PHP opcache on the server'
+inputs:
+  domain: 
+    description: 'The domain to visit to clear opcache for'
+    required: true
+  port:
+    description: 'The port for the http request to be made on'
+    required: false
+    default: 443
+  webroot:
+    description: 'The path of the site\'s webroot'
+    required: true
+  php_executable:
+    description: 'The PHP executable to use'
+    required: false
+    default: 'php'
+  owner:
+    description: 'The user who should own the file'
+    required: false
+  group:
+    description: 'The group the file should belong to'
+    required: false
+  permissions:
+    description: 'The octal permissions to use'
+    required: false
+    default: 644
+outputs:
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.domain }}
+    - ${{ inputs.port }}
+    - ${{ inputs.webroot }}
+    - ${{ inputs.php_executable }}
+    - ${{ inputs.owner }}
+    - ${{ inputs.group }}
+    - ${{ inputs.permissions }}
