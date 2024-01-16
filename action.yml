@@ -26,9 +26,16 @@ inputs:
     description: 'The octal permissions to use'
     required: false
     default: "644"
-    outputs:
-  status:
-    description: 'The status of the action'
+  ssh_user:
+    description: 'The user to connect to the server as'
+    required: true
+  ssh_host:
+    description: 'The hostname or IP to use for connecting via SSH'
+    required: true
+  ssh_port:
+    description: 'The SSH port for the server'
+    required: false
+    default: "22"
 runs:
   using: "docker"
   image: "Dockerfile"
@@ -40,6 +47,9 @@ runs:
     - ${{ inputs.owner }}
     - ${{ inputs.group }}
     - ${{ inputs.permissions }}
+    - ${{ inputs.ssh_user }}
+    - ${{ inputs.ssh_host }}
+    - ${{ inputs.ssh_port }}
 # outputs:
 #   status:
 #     description: 'The status of the action'
