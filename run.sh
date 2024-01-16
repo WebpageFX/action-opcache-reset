@@ -11,17 +11,17 @@
 # $9 = ssh host
 # $10 = ssh port
 
-echo "Here's what we've got...\n"
-echo "Domain: $1\n"
-echo "Port: $2\n"
-echo "Webroot: $3\n"
-echo "PHP Executable: $4\n"
-echo "Owner: $5\n"
-echo "Group: $6\n"
-echo "Octal Permissions: $7\n"
-echo "SSH User: $8\n"
-echo "SSH Host: $9\n"
-echo "SSH Port: ${10}\n"
+echo "Here's what we've got..."
+echo "Domain: $1"
+echo "Port: $2"
+echo "Webroot: $3"
+echo "PHP Executable: $4"
+echo "Owner: $5"
+echo "Group: $6"
+echo "Octal Permissions: $7"
+echo "SSH User: $8"
+echo "SSH Host: $9"
+echo "SSH Port: ${10}"
 
 echo "Creating the local PHP file"
 echo "<?php if ( function_exists( 'opcache_reset' ) ) { opcache_reset(); }" > opcache_reset.php
