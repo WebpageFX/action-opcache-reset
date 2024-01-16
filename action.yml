@@ -36,6 +36,9 @@ inputs:
     description: 'The SSH port for the server'
     required: false
     default: "22"
+  ssh_key:
+    description: 'The SSH key for connecting to the server'
+    required: true
 runs:
   using: "docker"
   image: "Dockerfile"
@@ -50,6 +53,7 @@ runs:
     - ${{ inputs.ssh_user }}
     - ${{ inputs.ssh_host }}
     - ${{ inputs.ssh_port }}
+    - ${{ inputs.ssh_key }}
 # outputs:
 #   status:
 #     description: 'The status of the action'
