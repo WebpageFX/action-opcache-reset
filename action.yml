@@ -10,7 +10,7 @@ inputs:
     required: false
     default: "443"
   webroot:
-    description: "The path of the site\'s webroot"
+    description: "The path of the site's webroot"
     required: true
   php_executable:
     description: 'The PHP executable to use'
@@ -27,8 +27,8 @@ inputs:
     required: false
     default: "644"
 runs:
-  using: docker
-  image: 'Dockerfile'
+  using: "docker"
+  image: "Dockerfile"
   args:
     - ${{ inputs.domain }}
     - ${{ inputs.port }}
