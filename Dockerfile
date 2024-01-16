@@ -1,4 +1,4 @@
-FROM alpine:3.10
+FROM ubuntu:latest
 
 COPY run.sh /run.sh
 
