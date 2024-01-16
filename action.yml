@@ -7,9 +7,9 @@ inputs:
   port:
     description: 'The port for the http request to be made on'
     required: false
-    default: 443
+    default: "443"
   webroot:
-    description: 'The path of the site\'s webroot'
+    description: "The path of the site\'s webroot"
     required: true
   php_executable:
     description: 'The PHP executable to use'
@@ -24,10 +24,9 @@ inputs:
   permissions:
     description: 'The octal permissions to use'
     required: false
-    default: 644
-outputs:
+    default: "644"
 runs:
-  using: 'docker'
+  using: docker
   image: 'Dockerfile'
   args:
     - ${{ inputs.domain }}
