@@ -1,3 +1,4 @@
+# action.yml
 name: 'Opcache Reset'
 description: 'Reset PHP opcache on the server'
 inputs:
