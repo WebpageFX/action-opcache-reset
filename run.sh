@@ -10,6 +10,7 @@
 # $8 = ssh user
 # $9 = ssh host
 # $10 = ssh port
+# $11 = ssh key
 
 echo "Here's what we've got..."
 echo "Domain: $1"
@@ -22,6 +23,20 @@ echo "Octal Permissions: $7"
 echo "SSH User: $8"
 echo "SSH Host: $9"
 echo "SSH Port: ${10}"
+echo "Not printing SSH private key"
+
+echo "Preparing SSH..."
+echo "${{ inputs.repo_private_key }}" | tr '*' '\n' > repo_private_key
+#set permissions on private keys to avoid unprotected private key file error
+chmod 600 repo_private_key
+#create ssh directory and known_hosts file
+mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
+#run ssh-keyscan to add host to known_hosts
+ssh-keyscan -H $9 >> ~/.ssh/known_hosts
+echo "Preparing SSH agent forwards..."
+eval $(ssh-agent -s)
+ssh-add repo_private_key
+echo "SSH prepared!"
 
 echo "Creating the local PHP file"
 echo "<?php if ( function_exists( 'opcache_reset' ) ) { opcache_reset(); }" > opcache_reset.php
