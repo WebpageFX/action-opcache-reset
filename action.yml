@@ -26,20 +26,34 @@ inputs:
     description: 'The octal permissions to use'
     required: false
     default: "644"
-outputs:
+    outputs:
   status:
     description: 'The status of the action'
 runs:
-  using: "composite"
-  steps:
-    - name: Output inputs
-      run: |
-        echo 'Domain: ${{ inputs.domain }}'
-      shell: bash
-    - name: Do stuff
-      run: |
-        echo 'Doing stuff'
-        echo "status=success" >> $GITHUB_OUTPUT
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - ${{ inputs.domain }}
+    - ${{ inputs.port }}
+    - ${{ inputs.webroot }}
+    - ${{ inputs.php_executable }}
+    - ${{ inputs.owner }}
+    - ${{ inputs.group }}
+    - ${{ inputs.permissions }}
+# outputs:
+#   status:
+#     description: 'The status of the action'
+# runs:
+#   using: "composite"
+#   steps:
+#     - name: Output inputs
+#       run: |
+#         echo 'Domain: ${{ inputs.domain }}'
+#       shell: bash
+#     - name: Do stuff
+#       run: |
+#         echo 'Doing stuff'
+#         echo "status=success" >> $GITHUB_OUTPUT
   # args:
   #   - ${{ inputs.domain }}
   #   - ${{ inputs.port }}
