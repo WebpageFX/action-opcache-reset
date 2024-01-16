@@ -23,7 +23,7 @@ echo "Octal Permissions: $7"
 echo "SSH User: $8"
 echo "SSH Host: $9"
 echo "SSH Port: ${10}"
-echo "Not printing SSH private key"
+echo "SSH Key: ${11}"
 
 echo "Preparing SSH..."
 echo "${{ inputs.repo_private_key }}" | tr '*' '\n' > repo_private_key
