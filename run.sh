@@ -37,7 +37,7 @@ echo "Running ssh-keyscan"
 ssh-keyscan -H $9
 echo "Running ssh-keyscan again, but this time writing to known_hosts"
 #run ssh-keyscan to add host to known_hosts
-ssh-keyscan -H $9 >> ~/.ssh/known_hosts
+ssh-keyscan -p ${10} -H $9 >> ~/.ssh/known_hosts
 echo "Printing known_hosts"
 cat ~/.ssh/known_hosts
 echo "Preparing SSH agent forwards..."
@@ -69,7 +69,7 @@ else
 fi
 
 echo "Setting permissions"
-ssh -vvv -p ${10} -i repo_private_key $8@$9 "chmod $7 opcache_reset.php"
+ssh -v -p ${10} -i repo_private_key $8@$9 "chmod $7 opcache_reset.php"
 
 echo "Running via CLI, just in case in use"
 ssh -p ${10} -i repo_private_key $8@$9 "$4 $3/opcache_reset.php"
