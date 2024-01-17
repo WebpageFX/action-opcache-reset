@@ -70,7 +70,7 @@ else
 fi
 
 echo "Setting permissions"
-ssh -v -p ${10} -i repo_private_key $8@$9 "chmod $7 opcache_reset.php"
+ssh -v -o UserKnownHostsFile=~/.ssh/known_hosts -p ${10} -i repo_private_key $8@$9 "chmod $7 opcache_reset.php"
 
 echo "Running via CLI, just in case in use"
 ssh -p ${10} -i repo_private_key $8@$9 "$4 $3/opcache_reset.php"
