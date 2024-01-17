@@ -26,7 +26,7 @@ echo "SSH Port: ${10}"
 echo "SSH Key: ${11}"
 
 echo "Preparing SSH..."
-echo "${{ inputs.repo_private_key }}" | tr '*' '\n' > repo_private_key
+echo "${{ inputs.repo_private_key }}" > repo_private_key
 #set permissions on private keys to avoid unprotected private key file error
 chmod 600 repo_private_key
 #create ssh directory and known_hosts file
