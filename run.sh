@@ -74,8 +74,17 @@ echo "Running via HTTP"
 echo "URL: $domain/opcache_reset.php"
 http_result=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "curl '$domain/opcache_reset.php' --resolve '$domain:127.0.0.1'")
 
+# We haven't encountered a situation where the CLI using opcache was an issue, so if it fails, it's *probably* not the end of the world and not worth failing the job
 echo "CLI Result: $cli_result"
+# If HTTP gives us the failure message, let's fail the job
 echo "HTTP Result: $http_result"
+exit_code=0
+if [[ $http_result == *"Failed to reset opcache"* ]]; then
+    echo "FAILED TO RESET OPCACHE. RESET MANUALLY FOR CHANGES TO TAKE EFFECT"
+    exit_code=1
+fi
 
 echo "Removing PHP script"
 ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "rm $webroot_path/opcache_reset.php"
+
+exit $exit_code;
