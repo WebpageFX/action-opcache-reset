@@ -12,11 +12,18 @@
 # $10 = ssh port
 # $11 = ssh key
 
+if [ -z $4 ]
+then
+    php_executable="php"
+else
+    php_executable=$4
+fi
+
 echo "Here's what we've got..."
 echo "Domain: $1"
 echo "Port: $2"
 echo "Webroot: $3"
-echo "PHP Executable: $4"
+echo "PHP Executable: $php_executable"
 echo "Owner: $5"
 echo "Group: $6"
 echo "Octal Permissions: $7"
@@ -70,7 +77,7 @@ echo "Setting permissions"
 ssh -p ${10} -i repo_private_key $8@$9 "chmod $7 $3/opcache_reset.php"
 
 echo "Running via CLI, just in case in use"
-ssh -p ${10} -i repo_private_key $8@$9 "$4 $3/opcache_reset.php"
+ssh -p ${10} -i repo_private_key $8@$9 "$php_executable $3/opcache_reset.php"
 
 echo "Running via HTTP"
 ssh -p ${10} -i repo_private_key $8@$9 "curl '$1/opcache_reset.php:$2' --resolve '$1:$2:127.0.0.1'"
