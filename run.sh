@@ -80,7 +80,8 @@ echo "Running via CLI, just in case in use"
 ssh -p ${10} -i repo_private_key $8@$9 "$php_executable $3/opcache_reset.php"
 
 echo "Running via HTTP"
+echo "URL: $1/opcache_reset.php:$2"
 ssh -p ${10} -i repo_private_key $8@$9 "curl '$1/opcache_reset.php:$2' --resolve '$1:$2:127.0.0.1'"
-
+sleep 60
 echo "Removing PHP script"
 ssh -p ${10} -i repo_private_key $8@$9 "rm $3/opcache_reset.php"
