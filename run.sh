@@ -72,7 +72,15 @@ fi
 echo "Setting permissions"
 ssh -v -o StrictHostKeyChecking=accept-new -p ${10} -i repo_private_key $8@$9 "chmod $7 opcache_reset.php"
 echo "Printing known_hosts"
-cat ~/.ssh/known_hosts
+cat /etc/ssh/ssh_known_hosts
+echo "Printing ssh_config"
+cat /etc/ssh/ssh_config
+echo "Listing files in home dir"
+cd ~
+ls -la
+echo "Listing files in ~/.ssh"
+cd ~/.ssh
+ls -la
 echo "Running via CLI, just in case in use"
 ssh -p ${10} -i repo_private_key $8@$9 "$4 $3/opcache_reset.php"
 
