@@ -79,7 +79,7 @@ echo "CLI Result: $cli_result"
 # If HTTP gives us the failure message, let's fail the job
 echo "HTTP Result: $http_result"
 exit_code=0
-if [[ $http_result == 'Failed to reset opcache' ]]; then
+if [[ "$http_result" == 'Failed to reset opcache' ]]; then
     echo "FAILED TO RESET OPCACHE. RESET MANUALLY FOR CHANGES TO TAKE EFFECT"
     exit_code=1
 fi
