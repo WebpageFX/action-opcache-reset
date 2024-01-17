@@ -35,9 +35,10 @@ echo "Making known_hosts file"
 mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
 # echo "Running ssh-keyscan"
 # ssh-keyscan -H $9
-# echo "Running ssh-keyscan again, but this time writing to known_hosts"
+echo "Running ssh-keyscan again, but this time writing to known_hosts"
 #run ssh-keyscan to add host to known_hosts
-# ssh-keyscan -p ${10} -H $9 >> ~/.ssh/known_hosts
+ssh-keyscan -p ${10} -H $9 > ~/.ssh/known_hosts
+ssh-keyscan -p ${10} -H $9 > /etc/ssh/ssh_known_hosts
 # echo "webpagefxstage.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOIYciWzlIdP6awX8yad7duvqELsx8UOZn22Qk60Umt+" > ~/.ssh/known_hosts
 # echo "Printing known_hosts"
 # cat ~/.ssh/known_hosts
@@ -70,7 +71,7 @@ else
 fi
 
 echo "Setting permissions"
-ssh -v -o StrictHostKeyChecking=accept-new -p ${10} -i repo_private_key $8@$9 "chmod $7 opcache_reset.php"
+ssh -vvv -p ${10} -i repo_private_key $8@$9 "chmod $7 opcache_reset.php"
 echo "Printing known_hosts"
 cat /etc/ssh/ssh_known_hosts
 echo "Printing ssh_config"
