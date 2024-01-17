@@ -43,7 +43,7 @@ ssh-add repo_private_key
 echo "SSH prepared!"
 
 echo "Creating the local PHP file"
-echo "<?php if ( function_exists( 'opcache_reset' ) ) { echo opcache_reset() ? 'Opcache Reset!' : 'Failed to reset opcache'; } else { echo 'Not using opcache'; }" > opcache_reset.php
+echo "<?php if ( function_exists( 'opcache_reset' ) ) { echo opcache_reset() ? 'Opcache Reset!' : 'Failed to reset opcache'; } else { echo 'Failed to reset opcache'; }" > opcache_reset.php
 
 echo "Copying to server"
 scp -o ForwardAgent=yes -P $ssh_port -i repo_private_key ./opcache_reset.php $ssh_user@$ssh_host:$webroot_path/opcache_reset.php
