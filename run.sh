@@ -27,14 +27,22 @@ echo "SSH Key: ${11}"
 
 echo "Preparing SSH..."
 echo "${11}" > repo_private_key
+echo "Setting key permissions"
 #set permissions on private keys to avoid unprotected private key file error
 chmod 600 repo_private_key
+echo "Making known_hosts file"
 #create ssh directory and known_hosts file
 mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
+echo "Running ssh-keyscan"
+ssh-keyscan -H $9
+echo "Running ssh-keyscan again, but this time writing to known_hosts"
 #run ssh-keyscan to add host to known_hosts
 ssh-keyscan -H $9 >> ~/.ssh/known_hosts
+echo "Printing known_hosts"
+cat ~/.ssh/known_hosts
 echo "Preparing SSH agent forwards..."
 eval $(ssh-agent -s)
+echo "Adding key to SSH"
 ssh-add repo_private_key
 echo "SSH prepared!"
 
