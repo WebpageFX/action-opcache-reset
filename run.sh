@@ -1,50 +1,43 @@
 #!/usr/bin/env sh
 
 # $1 = domain
-# $2 = port
-# $3 = webroot path
-# $4 = php executable
-# $5 = owner
-# $6 = group
-# $7 = octal permissions
-# $8 = ssh user
-# $9 = ssh host
-# $10 = ssh port
-# $11 = ssh key
+# $2 = webroot path
+# $3 = php executable
+# $4 = owner
+# $5 = group
+# $6 = octal permissions
+# $7 = ssh user
+# $8 = ssh host
+# $9 = ssh port
+# ${10} = ssh key
 
-if [ -z $4 ]
+if [ -z $3 ]
 then
     php_executable="php"
 else
-    php_executable=$4
+    php_executable=$3
 fi
 
 echo "Here's what we've got..."
 echo "Domain: $1"
-echo "Port: $2"
-echo "Webroot: $3"
+echo "Webroot: $2"
 echo "PHP Executable: $php_executable"
-echo "Owner: $5"
-echo "Group: $6"
-echo "Octal Permissions: $7"
-echo "SSH User: $8"
-echo "SSH Host: $9"
-echo "SSH Port: ${10}"
-echo "SSH Key: ${11}"
+echo "Owner: $4"
+echo "Group: $5"
+echo "Octal Permissions: $6"
+echo "SSH User: $7"
+echo "SSH Host: $8"
+echo "SSH Port: $9"
+echo "SSH Key: ${10}"
 
 echo "Preparing SSH..."
-echo "${11}" > repo_private_key
+echo "${10}" > repo_private_key
 echo "Setting key permissions"
 #set permissions on private keys to avoid unprotected private key file error
 chmod 600 repo_private_key
-echo "Making known_hosts file"
-#create ssh directory and known_hosts file
-mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
-# echo "Running ssh-keyscan"
-# ssh-keyscan -H $9
-echo "Running ssh-keyscan again, but this time writing to known_hosts"
+echo "Running ssh-keyscan and writing to known_hosts"
 #run ssh-keyscan to add host to known_hosts
-ssh-keyscan -p ${10} -H $9 > /etc/ssh/ssh_known_hosts
+ssh-keyscan -p $9 -H $8 > /etc/ssh/ssh_known_hosts
 echo "Preparing SSH agent forwards..."
 eval $(ssh-agent -s)
 echo "Adding key to SSH"
@@ -52,36 +45,38 @@ ssh-add repo_private_key
 echo "SSH prepared!"
 
 echo "Creating the local PHP file"
-echo "<?php if ( function_exists( 'opcache_reset' ) ) { opcache_reset(); }" > opcache_reset.php
+echo "<?php if ( function_exists( 'opcache_reset' ) ) { opcache_reset(); echo 'Opcache Reset!'; } else { echo 'Failed to reset opcache'; }" > opcache_reset.php
 
 echo "Copying to server"
-scp -o ForwardAgent=yes -P ${10} -i repo_private_key ./opcache_reset.php $8@$9:$3/opcache_reset.php
+scp -o ForwardAgent=yes -P $9 -i repo_private_key ./opcache_reset.php $7@$8:$2/opcache_reset.php
 
-if [ -z "$5" ]
+if [ -z "$4" ]
 then
-    echo "User provided, running chown to $5"
-    ssh -p ${10} -i repo_private_key $8@$9 "chown $5 $3/opcache_reset.php"
+    echo "User provided, running chown to $4"
+    ssh -p $9 -i repo_private_key $7@$8 "chown $4 $2/opcache_reset.php"
 else
     echo "Relying on default user"
 fi
 
-if [ -z "$6" ] 
+if [ -z "$5" ] 
 then
-    echo "Group provided, running chgrp to $6"
-    ssh -p ${10} -i repo_private_key $8@$9 "chgrp $6 $3/opcache_reset.php"
+    echo "Group provided, running chgrp to $5"
+    ssh -p $9 -i repo_private_key $7@$8 "chgrp $5 $2/opcache_reset.php"
 else
     echo "Relying on default group"
 fi
 
 echo "Setting permissions"
-ssh -p ${10} -i repo_private_key $8@$9 "chmod $7 $3/opcache_reset.php"
+ssh -p $9 -i repo_private_key $7@$8 "chmod $6 $2/opcache_reset.php"
 
 echo "Running via CLI, just in case in use"
-ssh -p ${10} -i repo_private_key $8@$9 "$php_executable $3/opcache_reset.php"
+ssh -p $9 -i repo_private_key $7@$8 "$php_executable $2/opcache_reset.php"
 
 echo "Running via HTTP"
-echo "URL: $1/opcache_reset.php:$2"
-ssh -p ${10} -i repo_private_key $8@$9 "curl '$1/opcache_reset.php:$2' --resolve '$1:$2:127.0.0.1'"
-sleep 60
+echo "URL: $1/opcache_reset.php"
+result=$(ssh -p $9 -i repo_private_key $7@$8 "curl '$1/opcache_reset.php' --resolve '$1:127.0.0.1'")
+
+echo "Result: $result"
+
 echo "Removing PHP script"
-ssh -p ${10} -i repo_private_key $8@$9 "rm $3/opcache_reset.php"
+ssh -p $9 -i repo_private_key $7@$8 "rm $2/opcache_reset.php"
