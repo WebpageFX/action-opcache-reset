@@ -5,10 +5,6 @@ inputs:
   domain: 
     description: 'The domain to visit to clear opcache for'
     required: true
-  port:
-    description: 'The port for the http request to be made on'
-    required: false
-    default: "443"
   webroot:
     description: "The path of the site's webroot"
     required: true
@@ -44,7 +40,6 @@ runs:
   image: "Dockerfile"
   args:
     - ${{ inputs.domain }}
-    - ${{ inputs.port }}
     - ${{ inputs.webroot }}
     - ${{ inputs.php_executable }}
     - ${{ inputs.owner }}
