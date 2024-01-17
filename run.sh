@@ -1,16 +1,5 @@
 #!/usr/bin/env sh
 
-# $1 = domain
-# $2 = webroot path
-# $3 = php executable
-# $4 = owner
-# $5 = group
-# $6 = octal permissions
-# $7 = ssh user
-# $8 = ssh host
-# $9 = ssh port
-# ${10} = ssh key
-
 domain=$1
 webroot_path=$2
 if [ -z $3 ]
@@ -79,13 +68,14 @@ echo "Setting permissions"
 ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "chmod $octal_permissions $webroot_path/opcache_reset.php"
 
 echo "Running via CLI, just in case in use"
-ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "$php_executable $webroot_path/opcache_reset.php"
+cli_result=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "$php_executable $webroot_path/opcache_reset.php")
 
 echo "Running via HTTP"
 echo "URL: $domain/opcache_reset.php"
-result=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "curl '$domain/opcache_reset.php' --resolve '$domain:127.0.0.1'")
+http_result=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "curl '$domain/opcache_reset.php' --resolve '$domain:127.0.0.1'")
 
-echo "Result: $result"
+echo "CLI Result: $cli_result"
+echo "HTTP Result: $http_result"
 
 echo "Removing PHP script"
 ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "rm $webroot_path/opcache_reset.php"
