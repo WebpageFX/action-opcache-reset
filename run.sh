@@ -75,7 +75,7 @@ ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "chmod $octal_permissio
 echo "Running via CLI, just in case in use"
 opcache_reset_cli() {
     cli_exit_code=0
-    cli_result=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "curl '$domain/opcache_reset.php' --resolve '$domain:127.0.0.1'")
+    cli_result=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "$php_executable $webroot_path/opcache_reset.php")
     cli_status=$?
     if [ "$cli_result" = 'Failed to reset opcache' ]; then
         echo "FAILED TO RESET OPCACHE. RESET MANUALLY FOR CHANGES TO TAKE EFFECT"
