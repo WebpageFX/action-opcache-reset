@@ -17,6 +17,8 @@ ssh_port=$9
 ssh_key=${10}
 attempts_opcache_reset_http=${11}
 attempts_opcache_reset_cli=${12}
+attempts_opcache_reset_http_delay=${13}
+attempts_opcache_reset_cli_delay=${14}
 
 
 echo "Here's what we've got..."
@@ -32,6 +34,8 @@ echo "SSH Port: $ssh_port"
 echo "SSH Key: $ssh_key"
 echo "Attempts Opcache Reset HTTP: $attempts_opcache_reset_http"
 echo "Attempts Opcache Reset CLI: $attempts_opcache_reset_cli"
+echo "Attempts Opcache Reset HTTP Delay: $attempts_opcache_reset_http_delay"
+echo "Attempts Opcache Reset CLI Delay: $attempts_opcache_reset_cli_delay"
 
 echo "Preparing SSH..."
 echo "$ssh_key" > repo_private_key
@@ -50,27 +54,35 @@ echo "SSH prepared!"
 echo "Creating the local PHP file"
 echo "<?php if ( function_exists( 'opcache_reset' ) ) { echo opcache_reset() ? 'Opcache Reset!' : 'Failed to reset opcache'; } else { echo 'Not using opcache'; }" > opcache_reset.php
 
-echo "Copying to server"
-scp -o ForwardAgent=yes -P $ssh_port -i repo_private_key ./opcache_reset.php $ssh_user@$ssh_host:$webroot_path/opcache_reset.php
+copy_opcache_reset_file() {
+    echo "Copying opcache_reset.php to $ssh_host"
+    scp -o ForwardAgent=yes -P $ssh_port -i repo_private_key ./opcache_reset.php $ssh_user@$ssh_host:$webroot_path/opcache_reset.php
 
-if [ -z "$owner" ]
-then
-    echo "User provided, running chown to $owner"
-    ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "chown $owner $webroot_path/opcache_reset.php"
-else
-    echo "Relying on default user"
-fi
+    if [ -z "$owner" ]
+    then
+        echo "User provided, running chown to $owner"
+        ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "chown $owner $webroot_path/opcache_reset.php"
+    else
+        echo "Relying on default user"
+    fi
 
-if [ -z "$group" ] 
-then
-    echo "Group provided, running chgrp to $group"
-    ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "chgrp $group $webroot_path/opcache_reset.php"
-else
-    echo "Relying on default group"
-fi
+    if [ -z "$group" ] 
+    then
+        echo "Group provided, running chgrp to $group"
+        ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "chgrp $group $webroot_path/opcache_reset.php"
+    else
+        echo "Relying on default group"
+    fi
 
-echo "Setting permissions"
-ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "chmod $octal_permissions $webroot_path/opcache_reset.php"
+    echo "Setting permissions"
+    ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "chmod $octal_permissions $webroot_path/opcache_reset.php"
+}
+
+remove_opcache_reset_file() {
+    echo "Removing opcache_reset.php from $ssh_host"
+    ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "rm $webroot_path/opcache_reset.php"
+}
+
 
 echo "Running via CLI, just in case in use"
 opcache_reset_cli() {
@@ -95,13 +107,16 @@ cli_result=""
 cli_status=0
 for i in $(seq 1 "$attempts_opcache_reset_cli"); do
     echo "Attempting CLI request $i of $attempts_opcache_reset_cli"
+    copy_opcache_reset_file
     # Capture the result and exit code of the function
     cli_result=$(opcache_reset_cli)
     # If the function exits with a 0 status code, we're good
     cli_status=$?
+    remove_opcache_reset_file
     if [ $cli_status -eq 0 ]; then
         break
     fi
+    sleep $attempts_opcache_reset_cli_delay
 done
 
 # We haven't encountered a situation where the CLI using opcache was an issue, so if it fails, it's *probably* not the end of the world and not worth failing the job
@@ -132,20 +147,20 @@ http_result=""
 http_status=0
 for i in $(seq 1 "$attempts_opcache_reset_http"); do
     echo "Attempting HTTP request $i of $attempts_opcache_reset_http"
+    copy_opcache_reset_file
     # Capture the result and exit code of the function
     http_result=$(opcache_reset_http)
     # If the function exits with a 0 status code, we're good
     http_status=$?
+    remove_opcache_reset_file
     if [ $http_status -eq 0 ]; then
         break
     fi
+    sleep $attempts_opcache_reset_http_delay
 done
 
 echo "HTTP Result: $http_result"
 echo "HTTP Status: $http_status"
-
-echo "Removing PHP script"
-ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "rm $webroot_path/opcache_reset.php"
 
 exit_code=0
 if [ $cli_status -ne 0 ] && [ $http_status -ne 0 ]; then

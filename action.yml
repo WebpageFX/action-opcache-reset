@@ -43,6 +43,14 @@ inputs:
     description: 'The number of times to try the opcache reset CLI command'
     required: false
     default: "1"
+  attempts_opcache_reset_http_delay:
+    description: 'The number of seconds to wait between opcache reset HTTP attempts'
+    required: false
+    default: "5"
+  attempts_opcache_reset_cli_delay:
+    description: 'The number of seconds to wait between opcache reset CLI attempts'
+    required: false
+    default: "5"
 runs:
   using: "docker"
   image: "Dockerfile"
@@ -59,3 +67,5 @@ runs:
     - ${{ inputs.ssh_key }}
     - ${{ inputs.attempts_opcache_reset_http }}
     - ${{ inputs.attempts_opcache_reset_cli }}
+    - ${{ inputs.attempts_opcache_reset_http_delay }}
+    - ${{ inputs.attempts_opcache_reset_cli_delay }}
