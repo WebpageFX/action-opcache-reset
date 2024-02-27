@@ -116,6 +116,7 @@ for i in $(seq 1 "$attempts_opcache_reset_cli"); do
     if [ $cli_status -eq 0 ]; then
         break
     fi
+    echo "Sleeping for $attempts_opcache_reset_cli_delay seconds"
     sleep $attempts_opcache_reset_cli_delay
 done
 
@@ -156,6 +157,7 @@ for i in $(seq 1 "$attempts_opcache_reset_http"); do
     if [ $http_status -eq 0 ]; then
         break
     fi
+    echo "Sleeping for $attempts_opcache_reset_http_delay seconds"
     sleep $attempts_opcache_reset_http_delay
 done
 
