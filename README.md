@@ -77,3 +77,5 @@ There are many inputs available to customize the behavior of this action. Some a
 | `ssh_host`       | Yes      | N/A     | The SSH host to connect to.                                         |
 | `ssh_port`       | No       | `22`    | The SSH port to connect to.                                         |
 | `ssh_key`        | Yes      | N/A     | The SSH private key to use to connect to the server.                |
+| `attempts_opcache_reset_http` | No | `3` | The number of times to try the opcache reset HTTP request.       |
+| `attempts_opcache_reset_cli` | No | `1` | The number of times to try the opcache reset CLI command.         |
