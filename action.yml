@@ -35,10 +35,14 @@ inputs:
   ssh_key:
     description: 'The SSH key for connecting to the server'
     required: true
-  retries_opcache_reset_http:
-    description: 'The number of times to retry the opcache reset HTTP request'
+  attempts_opcache_reset_http:
+    description: 'The number of times to try the opcache reset HTTP request'
     required: false
     default: "3"
+  attempts_opcache_reset_cli:
+    description: 'The number of times to try the opcache reset CLI command'
+    required: false
+    default: "1"
 runs:
   using: "docker"
   image: "Dockerfile"
@@ -53,4 +57,5 @@ runs:
     - ${{ inputs.ssh_host }}
     - ${{ inputs.ssh_port }}
     - ${{ inputs.ssh_key }}
-    - ${{ inputs.retries_opcache_reset_http }}
+    - ${{ inputs.attempts_opcache_reset_http }}
+    - ${{ inputs.attempts_opcache_reset_cli }}

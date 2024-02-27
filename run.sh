@@ -15,7 +15,8 @@ ssh_user=$7
 ssh_host=$8
 ssh_port=$9
 ssh_key=${10}
-retries_opcache_reset_http=${11}
+attempts_opcache_reset_http=${11}
+attempts_opcache_reset_cli=${12}
 
 
 echo "Here's what we've got..."
@@ -29,7 +30,8 @@ echo "SSH User: $ssh_user"
 echo "SSH Host: $ssh_host"
 echo "SSH Port: $ssh_port"
 echo "SSH Key: $ssh_key"
-echo "Retries: $retries_opcache_reset_http"
+echo "Attempts Opcache Reset HTTP: $attempts_opcache_reset_http"
+echo "Attempts Opcache Reset CLI: $attempts_opcache_reset_cli"
 
 echo "Preparing SSH..."
 echo "$ssh_key" > repo_private_key
@@ -71,37 +73,65 @@ echo "Setting permissions"
 ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "chmod $octal_permissions $webroot_path/opcache_reset.php"
 
 echo "Running via CLI, just in case in use"
-cli_result=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "$php_executable $webroot_path/opcache_reset.php")
-cli_status=$?
-
+opcache_reset_cli() {
+    cli_exit_code=0
+    cli_result=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "curl '$domain/opcache_reset.php' --resolve '$domain:127.0.0.1'")
+    cli_status=$?
+    if [ "$cli_result" = 'Failed to reset opcache' ]; then
+        echo "FAILED TO RESET OPCACHE. RESET MANUALLY FOR CHANGES TO TAKE EFFECT"
+        cli_exit_code=1
+    elif [ "$cli_result" = 'No input file specified.' ]; then
+        echo "FAILED TO RESET OPCACHE. RESET MANUALLY FOR CHANGES TO TAKE EFFECT"
+        cli_exit_code=1
+    elif [ $cli_status -ne 0 ]; then
+        echo "FAILED TO RESET OPCACHE. RESET MANUALLY FOR CHANGES TO TAKE EFFECT"
+        cli_exit_code=1
+    fi
+    echo "CLI Result: $cli_result"
+    return $cli_exit_code
+}
+# Retry the CLI request if it fails
+cli_result=""
+cli_status=0
+for i in $(seq 1 "$attempts_opcache_reset_cli"); do
+    echo "Attempting CLI request $i of $attempts_opcache_reset_cli"
+    # Capture the result and exit code of the function
+    cli_result=$(opcache_reset_cli)
+    # If the function exits with a 0 status code, we're good
+    cli_status=$?
+    if [ $cli_status -eq 0 ]; then
+        break
+    fi
+done
 
 # We haven't encountered a situation where the CLI using opcache was an issue, so if it fails, it's *probably* not the end of the world and not worth failing the job
 echo "CLI Result: $cli_result"
 echo "CLI Status: $cli_status"
-# If HTTP gives us the failure message, let's fail the job
 
-exit_code=0
 echo "Running via HTTP"
 echo "URL: $domain/opcache_reset.php"
 opcache_reset_http() {
+    http_exit_code=0
     http_result=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "curl '$domain/opcache_reset.php' --resolve '$domain:127.0.0.1'")
     http_status=$?
     if [ "$http_result" = 'Failed to reset opcache' ]; then
         echo "FAILED TO RESET OPCACHE. RESET MANUALLY FOR CHANGES TO TAKE EFFECT"
-        exit_code=1
+        http_exit_code=1
     elif [ "$http_result" = 'No input file specified.' ]; then
         echo "FAILED TO RESET OPCACHE. RESET MANUALLY FOR CHANGES TO TAKE EFFECT"
-        exit_code=1
+        http_exit_code=1
     elif [ $http_status -ne 0 ]; then
         echo "FAILED TO RESET OPCACHE. RESET MANUALLY FOR CHANGES TO TAKE EFFECT"
-        exit_code=1
+        http_exit_code=1
     fi
     echo "HTTP Result: $http_result"
-    return $exit_code
+    return $http_exit_code
 }
 # Retry the HTTP request if it fails
-for i in $(seq 1 "$retries_opcache_reset_http"); do
-    echo "Retrying HTTP request $i of $retries_opcache_reset_http"
+http_result=""
+http_status=0
+for i in $(seq 1 "$attempts_opcache_reset_http"); do
+    echo "Attempting HTTP request $i of $attempts_opcache_reset_http"
     # Capture the result and exit code of the function
     http_result=$(opcache_reset_http)
     # If the function exits with a 0 status code, we're good
@@ -116,5 +146,11 @@ echo "HTTP Status: $http_status"
 
 echo "Removing PHP script"
 ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "rm $webroot_path/opcache_reset.php"
+
+exit_code=0
+if [ $cli_status -ne 0 ] && [ $http_status -ne 0 ]; then
+    echo "FAILED TO RESET OPCACHE. RESET MANUALLY FOR CHANGES TO TAKE EFFECT"
+    exit_code=1
+fi
 
 exit $exit_code;
