@@ -52,7 +52,10 @@ ssh-add repo_private_key
 echo "SSH prepared!"
 
 echo "Creating the local PHP file"
-echo "<?php if ( function_exists( 'opcache_reset' ) ) { echo opcache_reset() ? 'Opcache Reset!' : 'Failed to reset opcache'; } else { echo 'Not using opcache'; }" > opcache_reset.php
+echo "<?php if ( function_exists( 'opcache_reset' ) ) { echo opcache_reset() ? 'Opcache Reset!' : 'Failed to reset opcache'; } else { echo 'Not using opcache'; }" > opcache_reset.php\
+
+echo "Checking if PHP file preexists on remote server"
+php_file_preexists=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "test -f $webroot_path/opcache_reset.php && echo 'true' || echo 'false'")
 
 copy_opcache_reset_file() {
     echo "Copying opcache_reset.php to $ssh_host"
@@ -78,11 +81,28 @@ copy_opcache_reset_file() {
     ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "chmod $octal_permissions $webroot_path/opcache_reset.php"
 }
 
+copy_opcache_reset_file_if_not_preexists() {
+    if [ "$php_file_preexists" = 'false' ]
+    then
+        copy_opcache_reset_file
+    else
+        echo "opcache_reset.php already exists on $ssh_host"
+    fi
+}
+
 remove_opcache_reset_file() {
     echo "Removing opcache_reset.php from $ssh_host"
     ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "rm $webroot_path/opcache_reset.php"
 }
 
+remove_opcache_reset_file_if_not_preexists() {
+    if [ "$php_file_preexists" = 'false' ]
+    then
+        remove_opcache_reset_file
+    else
+        echo "opcache_reset.php already exists on $ssh_host"
+    fi
+}
 
 echo "Running via CLI, just in case in use"
 opcache_reset_cli() {
@@ -107,12 +127,12 @@ cli_result=""
 cli_status=0
 for i in $(seq 1 "$attempts_opcache_reset_cli"); do
     echo "Attempting CLI request $i of $attempts_opcache_reset_cli"
-    copy_opcache_reset_file
+    copy_opcache_reset_file_if_not_preexists
     # Capture the result and exit code of the function
     cli_result=$(opcache_reset_cli)
     # If the function exits with a 0 status code, we're good
     cli_status=$?
-    remove_opcache_reset_file
+    remove_opcache_reset_file_if_not_preexists
     if [ $cli_status -eq 0 ]; then
         break
     fi
@@ -148,12 +168,12 @@ http_result=""
 http_status=0
 for i in $(seq 1 "$attempts_opcache_reset_http"); do
     echo "Attempting HTTP request $i of $attempts_opcache_reset_http"
-    copy_opcache_reset_file
+    copy_opcache_reset_file_if_not_preexists
     # Capture the result and exit code of the function
     http_result=$(opcache_reset_http)
     # If the function exits with a 0 status code, we're good
     http_status=$?
-    remove_opcache_reset_file
+    remove_opcache_reset_file_if_not_preexists
     if [ $http_status -eq 0 ]; then
         break
     fi
