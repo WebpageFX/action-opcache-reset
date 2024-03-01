@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-. functions.sh
+. /functions.sh
 
 domain=$1
 webroot_path=$2
