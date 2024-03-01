@@ -4,4 +4,4 @@ RUN apk add --no-cache openssh
 
 COPY functions.sh run.sh /
 
-CMD ["/run.sh"]
+ENTRYPOINT ["/run.sh"]
