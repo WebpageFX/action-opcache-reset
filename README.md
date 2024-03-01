@@ -80,7 +80,7 @@ There are many inputs available to customize the behavior of this action. Some a
 | `ssh_host`                          | Yes      | N/A     | The SSH host to connect to.                                         |
 | `ssh_port`                          | No       | `22`    | The SSH port to connect to.                                         |
 | `ssh_key`                           | Yes      | N/A     | The SSH private key to use to connect to the server.                |
-| `max_attempts_opcache_reset_http`   | No       | `3`     | The number of times to try the opcache reset HTTP request. Set to 0 to disable request.          |
+| `max_attempts_opcache_reset_http`   | No       | `10`     | The number of times to try the opcache reset HTTP request. Set to 0 to disable request.          |
 | `max_attempts_opcache_reset_cli`    | No       | `1`     | The number of times to try the opcache reset CLI request. Set to 0 to disablecommand.           |
 | `delay_attempts_opcache_reset_http` | No       | `5`     | The number of seconds to wait between opcache reset HTTP attempts.  |
 | `delay_attempts_opcache_reset_cli`  | No       | `5`     | The number of seconds to wait between opcache reset CLI attempts.   |
