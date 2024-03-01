@@ -2,7 +2,7 @@
 name: 'Opcache Reset'
 description: 'Reset PHP opcache on the server'
 inputs:
-  domain: 
+  domain:
     description: 'The domain to visit to clear opcache for'
     required: true
   webroot:
@@ -35,19 +35,19 @@ inputs:
   ssh_key:
     description: 'The SSH key for connecting to the server'
     required: true
-  attempts_opcache_reset_http:
-    description: 'The number of times to try the opcache reset HTTP request'
+  max_attempts_opcache_reset_http:
+    description: 'The number of times to try the opcache reset HTTP request. Set to 0 to disable'
     required: false
-    default: "3"
-  attempts_opcache_reset_cli:
-    description: 'The number of times to try the opcache reset CLI command'
+    default: "10"
+  max_attempts_opcache_reset_cli:
+    description: 'The number of times to try the opcache reset CLI command. Set to 0 to disable'
     required: false
     default: "1"
-  attempts_opcache_reset_http_delay:
+  delay_attempts_opcache_reset_http:
     description: 'The number of seconds to wait between opcache reset HTTP attempts'
     required: false
     default: "5"
-  attempts_opcache_reset_cli_delay:
+  delay_attempts_opcache_reset_cli:
     description: 'The number of seconds to wait between opcache reset CLI attempts'
     required: false
     default: "5"
@@ -65,7 +65,7 @@ runs:
     - ${{ inputs.ssh_host }}
     - ${{ inputs.ssh_port }}
     - ${{ inputs.ssh_key }}
-    - ${{ inputs.attempts_opcache_reset_http }}
-    - ${{ inputs.attempts_opcache_reset_cli }}
-    - ${{ inputs.attempts_opcache_reset_http_delay }}
-    - ${{ inputs.attempts_opcache_reset_cli_delay }}
+    - ${{ inputs.max_attempts_opcache_reset_http }}
+    - ${{ inputs.max_attempts_opcache_reset_cli }}
+    - ${{ inputs.delay_attempts_opcache_reset_http }}
+    - ${{ inputs.delay_attempts_opcache_reset_cli }}
