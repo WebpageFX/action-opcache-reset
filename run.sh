@@ -20,7 +20,7 @@ max_attempts_opcache_reset_http=${11}
 max_attempts_opcache_reset_cli=${12}
 delay_attempts_opcache_reset_http=${13}
 delay_attempts_opcache_reset_cli=${14}
-secret=${15:-null}
+secret=${15}
 
 echo "Here's what we've got..."
 echo "Domain: $domain"
