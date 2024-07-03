@@ -62,6 +62,7 @@ opcache:
               ssh_host: ${{ vars.TARGET_HOST }}
               ssh_port: ${{ vars.TARGET_PORT || 22 }}
               ssh_key: ${{ secrets.REPO_PRIVATE_KEY }}
+              secret: ${{ vars.FX_SECRET }}
 ```
 
 ## Inputs
@@ -84,3 +85,4 @@ There are many inputs available to customize the behavior of this action. Some a
 | `max_attempts_opcache_reset_cli`    | No       | `1`     | The number of times to try the opcache reset CLI request. Set to 0 to disablecommand.           |
 | `delay_attempts_opcache_reset_http` | No       | `5`     | The number of seconds to wait between opcache reset HTTP attempts.  |
 | `delay_attempts_opcache_reset_cli`  | No       | `5`     | The number of seconds to wait between opcache reset CLI attempts.   |
+| `secret`                            | No       | `null`   | Secret variable to validate opcache reset request by |
