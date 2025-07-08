@@ -2,6 +2,8 @@
 
 . /functions.sh
 
+set -x
+
 domain=$1
 webroot_path=$2
 if [ -z $3 ]; then
