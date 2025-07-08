@@ -83,4 +83,4 @@ runs:
     - ${{ inputs.delay_attempts_opcache_reset_cli }}
     - ${{ inputs.secret }}
     - ${{ inputs.curl_protocol }}
-    -${{ inputs.curl_port }}
+    - ${{ inputs.curl_port }}
