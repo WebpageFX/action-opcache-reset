@@ -63,6 +63,8 @@ opcache:
               ssh_port: ${{ vars.TARGET_PORT || 22 }}
               ssh_key: ${{ secrets.REPO_PRIVATE_KEY }}
               secret: ${{ vars.FX_SECRET }}
+              curl_protocol: ${{ vars.CURL_PROTOCOL || 'http' }}
+              curl_port: ${{ vars.CURL_PORT || '80' }}
 ```
 
 ## Inputs
@@ -86,3 +88,5 @@ There are many inputs available to customize the behavior of this action. Some a
 | `delay_attempts_opcache_reset_http` | No       | `5`     | The number of seconds to wait between opcache reset HTTP attempts.  |
 | `delay_attempts_opcache_reset_cli`  | No       | `5`     | The number of seconds to wait between opcache reset CLI attempts.   |
 | `secret`                            | No       | `null`   | Secret variable to validate opcache reset request by |
+| `curl_protocol`                     | No       | `http`   | The protocol to use for the curl command (http or https) |
+| `curl_port`                         | No       | `80`     | The port to use for the curl command (80 or 443) |

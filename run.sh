@@ -21,6 +21,8 @@ max_attempts_opcache_reset_cli=${12}
 delay_attempts_opcache_reset_http=${13}
 delay_attempts_opcache_reset_cli=${14}
 secret=${15}
+curl_protocol=${16}
+curl_port=${17}
 
 echo "Here's what we've got..."
 echo "Domain: $domain"
@@ -37,6 +39,8 @@ echo "Attempts Opcache Reset HTTP: $max_attempts_opcache_reset_http"
 echo "Attempts Opcache Reset CLI: $max_attempts_opcache_reset_cli"
 echo "Attempts Opcache Reset HTTP Delay: $delay_attempts_opcache_reset_http"
 echo "Attempts Opcache Reset CLI Delay: $delay_attempts_opcache_reset_cli"
+echo "Curl Protocol: $curl_protocol"
+echo "Curl Port: $curl_port"
 
 echo "Preparing SSH..."
 echo "$ssh_key" >repo_private_key

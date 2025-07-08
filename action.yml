@@ -55,6 +55,14 @@ inputs:
     description: 'Secret variable to validate opcache reset request by.'
     required: false
     default: null
+  curl_protocol:
+    description: 'The protocol to use for the curl command (http or https)'
+    required: false
+    default: "http"
+  curl_port:
+    description: 'The port to use for the curl command (80 or 443)'
+    required: false
+    default: "80"
 runs:
   using: "docker"
   image: "Dockerfile"
@@ -74,3 +82,5 @@ runs:
     - ${{ inputs.delay_attempts_opcache_reset_http }}
     - ${{ inputs.delay_attempts_opcache_reset_cli }}
     - ${{ inputs.secret }}
+    - ${{ inputs.curl_protocol }}
+    -${{ inputs.curl_port }}
