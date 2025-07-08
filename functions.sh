@@ -64,9 +64,9 @@ opcache_reset_cli() {
 opcache_reset_http() {
     http_exit_code=0
     if [ $secret ]; then
-        http_result=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "curl '$curl_protocol://$domain:$curl_port/opcache_reset.php?fx_reset=$secret' --resolve '$domain:127.0.0.1'")
+        http_result=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "curl '$curl_protocol://$domain/opcache_reset.php?fx_reset=$secret' --resolve '$domain:$curl_port:127.0.0.1'")
     else
-        http_result=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "curl '$curl_protocol://$domain:$curl_port/opcache_reset.php' --resolve '$domain:127.0.0.1'")
+        http_result=$(ssh -p $ssh_port -i repo_private_key $ssh_user@$ssh_host "curl '$curl_protocol://$domain/opcache_reset.php' --resolve '$domain:$curl_port:127.0.0.1'")
     fi
     http_status=$?
     if [ "$http_result" = 'Failed to reset opcache' ]; then
